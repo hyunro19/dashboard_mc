@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
+  </head>
+  <body>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyAUz7HVJ9Q8FULMOdF2SV__wvlZGijM7lg",
+        authDomain: "dashboard-mc-22f56.firebaseapp.com",
+        databaseURL: "https://dashboard-mc-22f56.firebaseio.com",
+        projectId: "dashboard-mc-22f56",
+        storageBucket: "dashboard-mc-22f56.appspot.com",
+        messagingSenderId: "408470441361",
+        appId: "1:408470441361:web:f122406538edad8db51e30",
+        measurementId: "G-JHXYT2P52W"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+      var db = firebase.firestore();
+    </script>
+
+    <!-- data select from cloud firestore -->
+    <button id="slct-btn"> SLCT-ALL </button>
+    <div id="slct-print"></div> <br>
+    <script>
+    var slctData = function() {
+      db.collection("outside").get().then((querySnapshot) => {
+        $('#slct-print').html('');
+        querySnapshot.forEach((doc) => {
+            $('#slct-print').append( `${doc.id} => hum = ${doc.data().hum}, temp = ${doc.data().temp} <br>` );
+        });
+      });
+    }
+
+    $('#slct-btn').click(function(){
+        slctData();
+      })
+    </script>
+
+
+<br>
+<br>
+<div>
+<label style="width:50%"> 
+  Show <select id="flt" style="width:50%" name="select_period" class="custom-select custom-select-sm form-control form-control-sm">
+          <option value="12hours" selected="selected">±12Hours</option>
+          <option value="24hours">±24Hours</option>
+          <option value="3days">Past 3Days</option>
+          <option value="1week">Past 1Week</option>
+        </select> <button id="flt-show-btn"> FLT-SHOW </button>
+</label>
+</div>
+<div id="flt-show-print"></div> <br>
+<br>
+
+
+    <!-- data select from cloud firestore -->
+<script>
+var getLatestAPIBasetime = function() {
+  var a = new Date();
+  var b = a.getTime();
+  b -= b%(1000*60*60); // 분단위 이하 내림
+  var c = a.getHours();
+
+  if (c%3 == 0) {
+    b-=(1000*60*60*1)
+  } else if (c%3 == 1) {
+    b-=(1000*60*60*2)
+  } //else if (c%3 == 2) {
+    //b-=(1000*60*60*3);
+  //};
+
+  return new Date(b);
+};
+    
+    
+    </script>
+    
+
+
+    <script>
+
+      
+      var fltslctData = function(collection,startTime, endTime) {
+        var insideRef = db.collection(collection)
+        var query = insideRef.where("time", ">=", startTime ).where("time", "<=", endTime )
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+              // doc.data() is never undefined for query doc snapshots
+              console.log(doc.id, " => ", doc.data());
+              $('#flt-slct-print').append( `${doc.id} => hum = ${doc.data().hum}, temp = ${doc.data().temp} <br>` );
+          });
+      })
+      .catch(function(error) {
+          console.log("Error getting documents: ", error);
+      });
+      }
+  
+      $('#flt-slct-btn').click(function(){
+          fltslctData();        
+        })
+      </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+      $('#flt-show-btn').click(function(){
+        var latestBaseTime = getLatestAPIBasetime();
+        var startTime
+        var endTime
+        var opt = $('#flt').val();
+        if (opt === "12hours") {
+          startTime = new Date(latestBaseTime.getTime()-1000*60*60*12); 
+          endTime = new Date(latestBaseTime.getTime()+1000*60*60*12);
+        } else if (opt === "24hours") {
+          startTime = new Date(latestBaseTime.getTime()-1000*60*60*24); 
+          endTime = new Date(latestBaseTime.getTime()+1000*60*60*24);
+        } else if (opt === "3days") {
+          startTime = new Date(latestBaseTime.getTime()-1000*60*60*72); 
+          endTime = new Date(latestBaseTime.getTime()+1000*60*60*24);
+        } else if (opt === "1week") {
+          startTime = new Date(latestBaseTime.getTime()-1000*60*60*144); 
+          endTime = new Date(latestBaseTime.getTime()+1000*60*60*24);
+        }
+
+        console.log($('#flt').val())
+        var txt = "";
+        txt += "startTime : "
+        txt += startTime.toISOString();
+        txt += '<br>';
+        txt += "baseTime : "
+        txt += latestBaseTime.toISOString();
+        txt += '<br>';
+        txt += "endTime : "
+        txt += endTime.toISOString();
+
+        $('#flt-show-print').html(txt);
+        fltslctData(startTime, endTime)
+        
+      })
+      
+    </script>
+
+
+
+    <button id="flt-slct-btn"> FLT-SLCT </button>
+    <div id="flt-slct-print"></div> <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- 로컬에서는 실행 안됨 -->
+    <script>
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      // ...
+       }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+    </script>
+  </body>
+</html>
