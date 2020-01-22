@@ -11,15 +11,16 @@ require("firebase/auth");
 require("firebase/firestore");
 
 // Your web app's Firebase configuration
+var config = require('./config.js')
 var firebaseConfig = {
-  apiKey: "AIzaSyAUz7HVJ9Q8FULMOdF2SV__wvlZGijM7lg",
-  authDomain: "dashboard-mc-22f56.firebaseapp.com",
-  databaseURL: "https://dashboard-mc-22f56.firebaseio.com",
-  projectId: "dashboard-mc-22f56",
-  storageBucket: "dashboard-mc-22f56.appspot.com",
-  messagingSenderId: "408470441361",
-  appId: "1:408470441361:web:f122406538edad8db51e30",
-  measurementId: "G-JHXYT2P52W"
+  apiKey: config.apiKey,
+  authDomain: config.authDomain,
+  databaseURL: config.databaseURL,
+  projectId: config.projectId,
+  storageBucket: config.storageBucket,
+  messagingSenderId: config.messagingSenderId,
+  appId: config.appId,
+  measurementId: config.measurementId
 };
 
 // Initialize Firebase
@@ -37,7 +38,7 @@ var getLatestAPIBasetime = function() {
   } else if (c%3 == 1) {
     b-=(1000*60*60*2)
   } //else if (c%3 == 2) {
-    //b-=(1000*60*60*3);
+    //b-=(1000*60*60*0);
   //};
   return new Date(b);
 };
