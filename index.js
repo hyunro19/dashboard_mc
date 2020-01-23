@@ -1,16 +1,11 @@
 var http = require('http');
 var fs = require('fs');
-// var template = require('./lib/template.js')
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-// Firebase App (the core Firebase SDK) is always required and
-// must be listed before other Firebase SDKs
 var firebase = require("firebase/app");
-// Add the Firebase products that you want to use
 require("firebase/auth");
 require("firebase/firestore");
 
-// Your web app's Firebase configuration
 var config = require('./config.js')
 var firebaseConfig = {
   apiKey: config.apiKey,
@@ -26,6 +21,20 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
+
+// MCU Configuration
+// var SerialPort = require("serialport");
+// var serialPort = new SerialPort(
+//   "COM4",
+//   {
+//     baudRate: 9600,
+//     parser: new SerialPort.parsers.Readline("\n"),
+//     flowControl: true
+//   },
+//   false
+// );
+
+
 
 
 var getLatestAPIBasetime = function() {
@@ -70,6 +79,7 @@ var dateObjToString_Base_Date = function(date) {
   
   return base_date
 }
+
 //JavaScript Date Object -> '1500' (HHMM)
 var dateObjToString_Base_Time = function(date) {  
   var base_time = '';
@@ -88,7 +98,6 @@ var addOutsideData = function(key, hum, temp) {
   }, { merge: true })
   .then(function() {
       console.log("Outside : Document written with ID: "+key);
-      // console.log(stringToDateObj(key))
   })
   .catch(function(error) {
       console.error("Outside : Error adding document: ", error);
@@ -155,21 +164,6 @@ var addInsideData = function(key, hum, temp) {
 };
 
 
-// LOG 정보 가져오는 로직 (매시 정각 1시간마다)
-// var getLogData = function() {
-//   fs.readdir('./data', function(error, filelist){
-//     fs.readFile(`data/log`, 'utf8', function(err, content){
-//         var array = content.toString().split("\n");
-//         var head = "로컬 LOG Latest : "+array[array.length-1]; 
-//         console.log(head);
-//         // 마지막 줄 데이터 가져오기
-//         // 로그 읽은거 파싱해서 key, hum, temp 추철
-//         addInsideData('20200102', '20','15');
-//       });
-//   });  
-// }
-
-
 var APIBasetime = getLatestAPIBasetime();
 getWeatherAPI( APIBasetime );  
 
@@ -183,17 +177,29 @@ setInterval(function(){
 
 
 // MUC -> NodeJS : Data 받는 로직 안에 실행 // MCU에서 10분마다 정보 전송
-setInterval(function(){
-  var hum = 37;
-  var temp = 7;
-  
-  if( new Date().getMinutes() < 20 ) { // Interval 가 10min이므로 매 시간당 2번씩 실행됨
-    var LOGBasetime = getLatestLOGBasetime();
-    var key = dateObjToString(LOGBasetime);
-    addInsideData(key, hum, temp);
-  }
-},1000*60*10)
+// serialPort.open(function() {
+//   console.log("Device connected...");
+//   var buff = "";
+//   serialPort.on("data", function(data) {
+//     console.log("Data : " + data);
+//     //jbAry.push(data);
+    
+//     if( new Date().getMinutes() < 20 ) { // MCU -> Server 전송 주기가 10min이므로 매 시간당 2번씩 실행됨
+//       //data 객체를 처리해서 hum, temp 변수에 값으로 넣어주어야 한다.
+//       var hum = 37;
+//       var temp = 7;
+//       var LOGBasetime = getLatestLOGBasetime();
+//       var key = dateObjToString(LOGBasetime);
+//       addInsideData(key, hum, temp);
+//     }
 
+//     buff += data;
+//     if (buff.indexOf("\n") !== -1) {
+//       console.log("buff : " + buff);
+//       buff = ""; //clear the Buffer
+//     }
+//   });
+// });
 
 
 // NodeJS Server Configuration

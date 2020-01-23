@@ -66,50 +66,6 @@
     return new Date(b);
   };
 
-  var getLatestLOGData = function(time) {
-    var docRef = db.collection("mc").doc(time);
-
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log("Document data:", doc.data(), " ", doc.id);
-
-          document.getElementById('insideTemp').innerHTML = doc.data().inside_temp
-          document.getElementById('insideHum').innerHTML = doc.data().inside_hum
-          humDraw("inside", doc.data().inside_hum)
-
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
-    
-    return;
-  }
-
-  var getLatestAPIData = function(time) {
-    var docRef = db.collection("mc").doc(time);
-
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log("Document data:", doc.data(), " ", doc.id);
-
-          document.getElementById('outsideTemp').innerHTML = doc.data().outside_temp
-          document.getElementById('outsideHum').innerHTML = doc.data().outside_hum
-          humDraw("outside", doc.data().outside_hum)
-
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
-    
-    return;
-  }
-
   //JavaScript Date Object -> '201007031500' (YYYYMMDDHHMM)
   var dateObjToString = function(date) {
     return dateObjToString_Base_Date(date)+dateObjToString_Base_Time(date)
@@ -132,6 +88,45 @@
     base_time += ( date.getHours()*100 );
 
     return base_time
+  }
+
+
+  var getLatestData = function() {
+    var latestLOGBasetime = dateObjToString( getLatestLOGBasetime() );
+    var latestAPIBasetime = dateObjToString( getLatestAPIBasetime() );
+
+    var docRefIn = db.collection("mc").doc(latestLOGBasetime);
+    var docRefOut = db.collection("mc").doc(latestAPIBasetime);
+
+    docRefIn.get().then(function(doc) {
+        if (doc.exists) {
+          document.getElementById('insideTemp').innerHTML = doc.data().inside_temp
+          document.getElementById('insideHum').innerHTML = doc.data().inside_hum
+          humDraw("inside", doc.data().inside_hum)
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+    docRefOut.get().then(function(doc) {
+        if (doc.exists) {
+          document.getElementById('outsideTemp').innerHTML = doc.data().outside_temp
+          document.getElementById('outsideHum').innerHTML = doc.data().outside_hum
+          humDraw("outside", doc.data().outside_hum)
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+    
+    return;
   }
 
 
@@ -201,7 +196,6 @@
           }        
           i++
         });
-        console.log("data input after : ", obj)
         makeArrayForGraph(obj)
       })
       .catch(function(error) {
@@ -214,12 +208,8 @@ window.onload = function() {
   $('#apply_btn').click(function(){
     apply_btn()
   })
-
+  getLatestData()
   apply_btn();
-  var latestLOGBasetime = dateObjToString( getLatestLOGBasetime() );
-  var latestAPIBasetime = dateObjToString( getLatestAPIBasetime() );
-  getLatestLOGData(latestLOGBasetime)
-  getLatestAPIData(latestAPIBasetime)
 }
   
 </script>
