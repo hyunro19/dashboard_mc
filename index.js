@@ -183,17 +183,16 @@ serialPort.open(function() {
     buff += data;
     if (buff.indexOf("\n") !== -1) {
           //data를 buff에 담아서 처리, hum, temp 변수에 값 삽입
-          if(buff.charAt(2)=== 't') {
-            console.log("buff temp")
-            temp = buff.substring(0,2);
-          } else if (buff.charAt(2)=== 'h') {
-            console.log("buff hum")
-            hum = buff.substring(0,2);
+          if(buff.includes('t')) {
+            console.log("buff temp : ", buff)
+            temp = buff.split("t")[0];
+          } else if (buff.includes('h')) {
+            console.log("buff hum : ", buff)
+            temp = buff.split("h")[0];
           } else {
-            console.log("error : buff empty")
+            console.log("error : buff : ", buff)
           }
 
-      console.log("buff : " + buff);
       buff = ""; //clear the Buffer
     }
     
