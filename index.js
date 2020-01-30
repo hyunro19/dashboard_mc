@@ -121,7 +121,6 @@ var getWeatherAPI = function(basetime){
     queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('300'); /*한 페이지 결과 수*/
     queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /*페이지 번호*/
     queryParams += '&' + encodeURIComponent('_type') + '=' + encodeURIComponent('json'); /*xml(기본값), json*/
-    console.log(url+queryParams);
     
     xhr.open('GET', url + queryParams);
     xhr.onreadystatechange = function () {
