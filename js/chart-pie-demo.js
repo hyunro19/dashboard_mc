@@ -12,8 +12,6 @@ if (collection == "outside") {
   ctx = document.getElementById("myPieChart1");
   color = '#4e73df'
 }
-console.log(ctx)
-console.log(collection, " ", hum )
 var myPieChart = new Chart(ctx, {
   type: 'doughnut',
   data: {

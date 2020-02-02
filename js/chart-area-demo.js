@@ -29,7 +29,6 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 // Area Chart Example
 var drawGraph1 = function(obj) {
-    console.log("drawGraph : ", obj)
     var ctx = document.getElementById("myAreaChart1");
     var cnvs = ctx.getContext('2d');
     cnvs.clearRect(0, 0, ctx.width, ctx.height)

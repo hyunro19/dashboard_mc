@@ -23,16 +23,16 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 // MCU Configuration
-var SerialPort = require("serialport");
-var serialPort = new SerialPort(
-  "COM8",
-  {
-    baudRate: 9600,
-    parser: new SerialPort.parsers.Readline("\n"),
-    flowControl: true
-  },
-  false
-);
+// var SerialPort = require("serialport");
+// var serialPort = new SerialPort(
+//   "COM8",
+//   {
+//     baudRate: 9600,
+//     parser: new SerialPort.parsers.Readline("\n"),
+//     flowControl: true
+//   },
+//   false
+// );
 
 
 var getLatestAPIBasetime = function() {
@@ -174,42 +174,42 @@ setInterval(function(){
 
 
 //MUC -> NodeJS : Data 받는 로직 안에 실행 // MCU에서 10분마다 정보 전송
-serialPort.open(function() {
-  console.log("Device connected...");
-  var buff = "";
-  serialPort.on("data", function(data) {
-    console.log("Data : " + data);
+// serialPort.open(function() {
+//   console.log("Device connected...");
+//   var buff = "";
+//   serialPort.on("data", function(data) {
+//     console.log("Data : " + data);
     
-    buff += data;
-    if (buff.indexOf("\n") !== -1) {
-          //data를 buff에 담아서 처리, hum, temp 변수에 값 삽입
-          if(buff.includes('t')) {
-            console.log("buff temp : ", buff)
-            temp = buff.split("t")[0];
-          } else if (buff.includes('h')) {
-            console.log("buff hum : ", buff)
-            temp = buff.split("h")[0];
-          } else {
-            console.log("error : buff : ", buff)
-          }
+//     buff += data;
+//     if (buff.indexOf("\n") !== -1) {
+//           //data를 buff에 담아서 처리, hum, temp 변수에 값 삽입
+//           if(buff.includes('t')) {
+//             console.log("buff temp : ", buff)
+//             temp = buff.split("t")[0];
+//           } else if (buff.includes('h')) {
+//             console.log("buff hum : ", buff)
+//             temp = buff.split("h")[0];
+//           } else {
+//             console.log("error : buff : ", buff)
+//           }
 
-      buff = ""; //clear the Buffer
-    }
+//       buff = ""; //clear the Buffer
+//     }
     
-    // MCU -> Server 전송 주기가 10min이므로 매 시간당 2번씩 실행됨
-    if( new Date().getMinutes() < 20 ) { 
-      if(hum != undefined && temp != undefined) {
-        console.log("inside add")
-        var LOGBasetime = getLatestLOGBasetime();
-        var key = dateObjToString(LOGBasetime);
-        addInsideData(key, parseInt(hum), parseInt(temp));
-        addInsideData2(key, parseInt(hum), parseInt(temp));
-        temp = undefined;
-        hum = undefined;
-      }
-    }
-  });
-});
+//     // MCU -> Server 전송 주기가 10min이므로 매 시간당 2번씩 실행됨
+//     if( new Date().getMinutes() < 20 ) { 
+//       if(hum != undefined && temp != undefined) {
+//         console.log("inside add")
+//         var LOGBasetime = getLatestLOGBasetime();
+//         var key = dateObjToString(LOGBasetime);
+//         addInsideData(key, parseInt(hum), parseInt(temp));
+//         addInsideData2(key, parseInt(hum), parseInt(temp));
+//         temp = undefined;
+//         hum = undefined;
+//       }
+//     }
+//   });
+// });
 
 
 // NodeJS Server Configuration

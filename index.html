@@ -85,7 +85,7 @@
   var dateObjToString_Base_Time = function(date) {  
     var base_time = '';
     if (date.getHours() < 10) { base_time += '0'; }
-    base_time += ( date.getHours()*100 );
+    base_time += ( date.getHours()+'00' );
 
     return base_time
   }
@@ -175,26 +175,31 @@
         obj.outside_hums[y] = ( obj.outside_hums[y-2]*1 + obj.outside_hums[y+1]*2 ) /3
       }
     }
-
+    // Reset Canvas
+    document.getElementById('chart-area1').innerHTML = '<canvas id="myAreaChart1"></canvas>';
+    document.getElementById('chart-area2').innerHTML = '<canvas id="myAreaChart2"></canvas>';
     drawGraph1(obj)
     drawGraph2(obj)
   }
 
   var fltslctData = function(obj, startTime, endTime) {
     var i = 0;
+    var l = obj["labels"].length;
     var Ref = db.collection("mc")
     var query = Ref.where("time", ">=", startTime ).where("time", "<=", endTime )
       .get()
       .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
           // doc.data() is never undefined for query doc snapshots
-          obj.inside_temps[i] = doc.data().inside_temp;
-          obj.inside_hums[i] = doc.data().inside_hum;
+          if ( (l==25 && i<=12) || (l==49 && i<=24) || (l==97 && i<=72) || (l==169 && i<=144) ) {
+            obj.inside_temps[i] = doc.data().inside_temp;
+            obj.inside_hums[i] = doc.data().inside_hum;
+          }
           if(i%3 == 0) {
             obj.outside_temps[i] = doc.data().outside_temp;
             obj.outside_hums[i] = doc.data().outside_hum;
           }        
-          i++
+          i++          
         });
         makeArrayForGraph(obj)
       })
@@ -369,7 +374,7 @@ window.onload = function() {
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <div class="chart-area">
+          <div class="chart-area" id="chart-area1">
             <canvas id="myAreaChart1"></canvas>
           </div>
         </div>
@@ -396,7 +401,7 @@ window.onload = function() {
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <div class="chart-area">
+          <div class="chart-area" id="chart-area2">
             <canvas id="myAreaChart2"></canvas>
           </div>
         </div>
